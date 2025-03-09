@@ -3,32 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Al-Qur'an</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Al-Qur'an Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <h1>Website Al-Qur'an</h1>
-        <nav>
-            <ul>
-                <li><a href="#home">Beranda</a></li>
-                <li><a href="#quran">Baca Al-Qur'an</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="home">
-            <h2>Selamat Datang di Website Al-Qur'an</h2>
-            <p>Temukan bacaan Al-Qur'an di sini.</p>
-        </section>
-        <section id="quran">
-            <h2>Baca Al-Qur'an</h2>
-            <div id="quran-container"></div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2025 Website Al-Qur'an</p>
-    </footer>
-    <script src="script.js"></script>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold text-center mb-4">Al-Qur'an Digital</h1>
+        <input id="search" type="text" placeholder="Cari surah..." class="w-full p-2 mb-4 border rounded" onkeyup="filterSurahs()">
+        <div id="surahList" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <script>
+        const API_URL = "https://api.quran.com/api/v4/";
+        let surahs = [];
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch(`${API_URL}chapters`)
+                .then(res => res.json())
+                .then(data => {
+                    surahs = data.chapters;
+                    displaySurahs(surahs);
+                });
+        });
+        
+        function displaySurahs(surahArray) {
+            const surahList = document.getElementById("surahList");
+            surahList.innerHTML = "";
+            surahArray.forEach(surah => {
+                const div = document.createElement("div");
+                div.className = "p-4 bg-white rounded shadow cursor-pointer text-center";
+                div.innerHTML = `<p class="text-lg font-semibold">${surah.name_simple}</p>
+                                <p class="text-sm text-gray-500">${surah.translated_name.name}</p>`;
+                div.onclick = () => window.location.href = `surah.html?surah=${surah.id}`;
+                surahList.appendChild(div);
+            });
+        }
+        
+        function filterSurahs() {
+            const search = document.getElementById("search").value.toLowerCase();
+            const filteredSurahs = surahs.filter(surah => surah.name_simple.toLowerCase().includes(search));
+            displaySurahs(filteredSurahs);
+        }
+    </script>
 </body>
 </html>
